@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import '../styles/globals.css';
+import TopBar from '../components/TopBar';
 
 export const metadata = {
   title: 'QRD Storage',
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <TopBar />
         <header className="site-header">
           <div className="header-inner">
             <Link href="/" className="brand">

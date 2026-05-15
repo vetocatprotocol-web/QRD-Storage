@@ -26,3 +26,37 @@ export class UploadSessionResponse {
   expiresAt!: string;
   uploadSessionId?: string;
 }
+
+export class StartMultipartDto {
+  @IsNotEmpty()
+  @IsString()
+  fileName!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  contentType!: string;
+}
+
+export class StartMultipartResponse {
+  fileId!: string;
+}
+
+export class PartUrlDto {
+  @IsNotEmpty()
+  @IsString()
+  fileId!: string;
+}
+
+export class PartUrlResponse {
+  uploadUrl!: string;
+  authorizationToken!: string;
+}
+
+export class FinishMultipartDto {
+  @IsNotEmpty()
+  @IsString()
+  fileId!: string;
+
+  @IsNotEmpty()
+  partSha1Array!: string[];
+}

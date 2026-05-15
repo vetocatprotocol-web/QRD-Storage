@@ -91,9 +91,10 @@ export class UploadService {
         data: {
           b2ObjectId: payload.b2FileId,
           encryptedChecksum: payload.encryptedSha1 ?? null,
-          plaintextChecksum: payload.plaintextChecksum ?? null,
-          encryptionSalt: payload.encryptionSalt ?? null,
-          encryptionIv: payload.encryptionIv ?? null,
+            plaintextChecksum: payload.plaintextChecksum ?? null,
+            encryptionSalt: payload.encryptionSalt ?? null,
+            encryptionIv: payload.encryptionIv ?? null,
+            encryptedFileKey: payload.encryptedFileKey ?? null,
           chunkCount: payload.chunkCount ?? null,
           verificationState: 'VERIFIED',
           fileSize: BigInt(contentLength),
@@ -105,5 +106,33 @@ export class UploadService {
     await this.prisma.uploadSession.delete({ where: { id: session.id } });
 
     return { status: 'ok' };
+  }
+
+  async startMultipartSession(userId: string, payload: { fileName: string; contentType: string }) {
+    const b2Client = new BackblazeB2Client({ accountId: env.B2_ACCOUNT_ID ?? '', applicationKey: env.B2_APPLICATION_KEY ?? '', bucketId: env.B2_BUCKET_ID ?? '' });
+    const res = await b2Client.startLargeFile(payload.fileName, payload.contentType ?? 'application/octet-stream');
+    const file = await this.prisma.file.create({
+      data: {
+        userId,
+        fileName: payload.fileName,
+        contentType: payload.contentType,
+        fileSize: 0,
+        status: 'pending',
+      },
+    });
+    const uploadSession = await this.prisma.uploadSession.create({ data: { userId, fileId: file.id, uploadUrl: '', expiresAt: new Date(Date.now() + 1000 * 60 * 60) } });
+    return { fileId: res.fileId, uploadSessionId: uploadSession.id, dbFileId: file.id };
+  }
+
+  async getPartUploadUrl(userId: string, fileId: string) {
+    const b2Client = new BackblazeB2Client({ accountId: env.B2_ACCOUNT_ID ?? '', applicationKey: env.B2_APPLICATION_KEY ?? '', bucketId: env.B2_BUCKET_ID ?? '' });
+    const url = await b2Client.getUploadPartUrl(fileId);
+    return { uploadUrl: url.uploadUrl, authorizationToken: url.authorizationToken };
+  }
+
+  async finishMultipart(userId: string, payload: { fileId: string; partSha1Array: string[] }) {
+    const b2Client = new BackblazeB2Client({ accountId: env.B2_ACCOUNT_ID ?? '', applicationKey: env.B2_APPLICATION_KEY ?? '', bucketId: env.B2_BUCKET_ID ?? '' });
+    const finish = await b2Client.finishLargeFile(payload.fileId, payload.partSha1Array);
+    return finish;
   }
 }

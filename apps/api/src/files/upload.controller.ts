@@ -26,4 +26,31 @@ export class UploadController {
   ) {
     return this.uploadService.verifyUploadSession(request.user.sub, body);
   }
+
+  @Post('multipart/start')
+  @UseGuards(JwtAuthGuard)
+  async startMultipart(
+    @Req() request: FastifyRequest & { user: { sub: string } },
+    @Body() body: any,
+  ) {
+    return this.uploadService.startMultipartSession(request.user.sub, body);
+  }
+
+  @Post('multipart/part-url')
+  @UseGuards(JwtAuthGuard)
+  async getPartUrl(
+    @Req() request: FastifyRequest & { user: { sub: string } },
+    @Body() body: any,
+  ) {
+    return this.uploadService.getPartUploadUrl(request.user.sub, body.fileId);
+  }
+
+  @Post('multipart/finish')
+  @UseGuards(JwtAuthGuard)
+  async finishMultipart(
+    @Req() request: FastifyRequest & { user: { sub: string } },
+    @Body() body: any,
+  ) {
+    return this.uploadService.finishMultipart(request.user.sub, body);
+  }
 }

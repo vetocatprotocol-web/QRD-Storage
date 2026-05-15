@@ -26,6 +26,10 @@ export class VerifyUploadDto {
   encryptionIv?: string;
 
   @IsOptional()
+  @IsString()
+  encryptedFileKey?: string;
+
+  @IsOptional()
   @IsNumber()
   @Min(1)
   chunkCount?: number;

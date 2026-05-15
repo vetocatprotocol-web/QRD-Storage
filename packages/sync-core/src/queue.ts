@@ -13,6 +13,7 @@ export interface SyncJob {
 
 const DB_NAME = 'qrd-sync-db';
 const STORE_JOBS = 'jobs';
+const STORE_CHECKPOINTS = 'checkpoints';
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
 
@@ -22,6 +23,9 @@ async function getDb() {
       upgrade(db) {
         if (!db.objectStoreNames.contains(STORE_JOBS)) {
           db.createObjectStore(STORE_JOBS, { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains(STORE_CHECKPOINTS)) {
+          db.createObjectStore(STORE_CHECKPOINTS, { keyPath: 'fileId' });
         }
       },
     });
@@ -58,5 +62,29 @@ export async function deleteJob(id: number): Promise<void> {
   const db = await getDb();
   const tx = db.transaction(STORE_JOBS, 'readwrite');
   tx.objectStore(STORE_JOBS).delete(id);
+  await tx.done;
+}
+
+export async function saveCheckpoint(fileId: string, checkpoint: any): Promise<void> {
+  const db = await getDb();
+  const tx = db.transaction(STORE_CHECKPOINTS, 'readwrite');
+  const store = tx.objectStore(STORE_CHECKPOINTS);
+  await store.put({ fileId, checkpoint });
+  await tx.done;
+}
+
+export async function getCheckpoint(fileId: string): Promise<any | null> {
+  const db = await getDb();
+  const tx = db.transaction(STORE_CHECKPOINTS, 'readonly');
+  const store = tx.objectStore(STORE_CHECKPOINTS);
+  const v = await store.get(fileId as any);
+  await tx.done;
+  return v || null;
+}
+
+export async function deleteCheckpoint(fileId: string): Promise<void> {
+  const db = await getDb();
+  const tx = db.transaction(STORE_CHECKPOINTS, 'readwrite');
+  tx.objectStore(STORE_CHECKPOINTS).delete(fileId as any);
   await tx.done;
 }

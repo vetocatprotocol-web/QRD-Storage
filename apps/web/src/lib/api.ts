@@ -54,6 +54,38 @@ export async function createUploadSession(token: string, payload: CreateUploadSe
   });
 }
 
+export async function startMultipart(token: string, payload: { fileName: string; contentType: string }) {
+  return request<any>('uploads/multipart/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getPartUrl(token: string, fileId: string) {
+  return request<any>('uploads/multipart/part-url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ fileId }),
+  });
+}
+
+export async function finishMultipart(token: string, payload: { fileId: string; partSha1Array: string[] }) {
+  return request<any>('uploads/multipart/finish', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function verifyUpload(token: string, payload: any) {
+  return request<any>('uploads/verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function getFiles(token: string) {
   return request<any[]>('files', {
     method: 'GET',

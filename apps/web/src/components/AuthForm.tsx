@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@qrd/ui';
 import { Input } from '@qrd/ui';
 import { Card } from '@qrd/ui';
@@ -12,6 +13,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ type }: AuthFormProps) {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -33,7 +35,9 @@ export function AuthForm({ type }: AuthFormProps) {
           : await register(email, password, name);
 
       saveTokens(response.accessToken, response.refreshToken);
-      setMessage('Success. You are signed in.');
+        setMessage('Success. You are signed in.');
+        // redirect to dashboard after successful login/register
+        router.push('/dashboard');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to submit form');
     } finally {
