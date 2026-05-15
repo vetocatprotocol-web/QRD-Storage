@@ -1,651 +1,593 @@
-# QRD STORAGE
+<div align="center">
 
-> Your encrypted data, your ownership, your control.
+```
+ ██████╗ ██████╗ ██████╗     ███████╗████████╗ ██████╗ ██████╗  █████╗  ██████╗ ███████╗
+██╔═══██╗██╔══██╗██╔══██╗    ██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗██╔══██╗██╔════╝ ██╔════╝
+██║   ██║██████╔╝██║  ██║    ███████╗   ██║   ██║   ██║██████╔╝███████║██║  ███╗█████╗  
+██║▄▄ ██║██╔══██╗██║  ██║    ╚════██║   ██║   ██║   ██║██╔══██╗██╔══██║██║   ██║██╔══╝  
+╚██████╔╝██║  ██║██████╔╝    ███████║   ██║   ╚██████╔╝██║  ██║██║  ██║╚██████╔╝███████╗
+ ╚══▀▀═╝ ╚═╝  ╚═╝╚═════╝     ╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+```
 
-QRD STORAGE adalah privacy-first encrypted sync platform yang dirancang untuk:
-- sinkronisasi otomatis
-- backup terenkripsi
-- optimasi storage perangkat
-- cloud storage usage-based
-- seamless background sync
+**Your encrypted data. Your ownership. Your control.**
 
-QRD STORAGE bukan cloud drive tradisional.
+[![License](https://img.shields.io/badge/license-proprietary-red.svg?style=flat-square)](./LICENSE)
+[![Platform](https://img.shields.io/badge/platform-web%20%7C%20android%20%7C%20ios-blue?style=flat-square)](#)
+[![Stack](https://img.shields.io/badge/stack-NestJS%20%2B%20Next.js%20%2B%20Capacitor-informational?style=flat-square)](#)
+[![Storage](https://img.shields.io/badge/storage-B2%20%7C%20Wasabi%20%7C%20Cloudflare%20R2-orange?style=flat-square)](#)
+[![Encryption](https://img.shields.io/badge/encryption-AES--256--GCM%20%2B%20Argon2id-success?style=flat-square)](#)
 
-QRD STORAGE adalah:
-- encrypted sync ecosystem
-- smart storage offloading platform
-- personal encrypted cloud vault
-- zero-trust storage infrastructure
-
----
-
-# Core Philosophy
-
-QRD STORAGE dibangun berdasarkan prinsip:
-
-## 1. User Ownership First
-
-Pengguna harus:
-- memiliki kontrol penuh terhadap data
-- mengontrol file dan perilaku sinkronisasi
-- memiliki ownership terhadap encryption keys
-- bebas dari lock-in storage package
+</div>
 
 ---
 
-## 2. Zero-Trust Architecture
+## Apa itu QRD Storage?
 
-QRD STORAGE mengasumsikan:
-- object storage tidak trusted
-- backend tidak trusted
-- plaintext tidak boleh keluar dari device
+QRD Storage bukan cloud drive biasa.
 
-Karena itu:
-- semua file dienkripsi sebelum upload
-- backend tidak pernah menerima plaintext file
-- object storage hanya menyimpan encrypted blobs
+QRD Storage adalah **encrypted sync ecosystem** — infrastruktur penyimpanan terenkripsi yang bekerja diam-diam di latar belakang, mengamankan file Anda secara otomatis sebelum meninggalkan perangkat Anda. Backend kami tidak pernah bisa membaca file Anda. Storage provider kami tidak pernah melihat isi data Anda. Hanya Anda yang memegang kuncinya.
 
----
+> *"Bayangkan iCloud atau Google Photos — tapi dengan enkripsi yang tidak bisa ditembus siapapun, bahkan oleh kami."*
 
-## 3. Privacy-First Storage
+**QRD Storage terasa seperti:**
+- Lapisan backup tersembunyi yang bekerja otomatis
+- Perpanjangan storage perangkat Anda ke cloud
+- Vault pribadi yang hanya Anda yang bisa buka
 
-QRD STORAGE memprioritaskan:
-- end-to-end encryption
-- minimal metadata collection
-- no behavioral tracking
-- no content inspection
-- transparent billing
+**QRD Storage bukan:**
+- Platform analytics atau surveillance
+- Cloud drive yang membaca konten Anda
+- Layanan dengan paket storage yang dipaksakan
 
 ---
 
-# Product Vision
+## Fitur Utama
 
-QRD STORAGE dirancang menjadi:
-- personal encrypted cloud vault
-- intelligent storage optimization platform
-- seamless encrypted sync ecosystem
-- scalable storage infrastructure layer
+### 🔐 Enkripsi End-to-End yang Sesungguhnya
 
-QRD STORAGE membantu pengguna:
+File dienkripsi **di perangkat Anda** sebelum dikirim ke manapun. Menggunakan AES-256-GCM dengan key derivation Argon2id. Backend kami hanya menerima encrypted blobs — secara arsitektur tidak mungkin membaca isi file Anda.
 
-> menyimpan lebih banyak data tanpa membebani storage perangkat.
+```
+Password Anda
+    ↓ Argon2id (600.000 iterasi, 64MB memory)
+Master Key (hanya di memory perangkat)
+    ↓ HKDF
+File Encryption Key
+    ↓ AES-256-GCM + random IV per chunk
+Encrypted Blob  →  Object Storage
+```
+
+### 🗜️ Kompresi Cerdas Sebelum Enkripsi
+
+File dikompres (gzip) **sebelum** dienkripsi — karena data terenkripsi tidak bisa dikompres. Untuk dokumen dan teks ini menghemat 30–70% bandwidth dan storage. File yang sudah terkompresi (JPG, MP4, ZIP) secara otomatis melewati proses ini.
+
+### 🔄 Sinkronisasi Latar Belakang
+
+Pilih folder. Selesai. QRD Storage memantau perubahan file secara otomatis dan menyinkronkan ke cloud tanpa Anda perlu melakukan apapun. Upload berjalan di background, bisa dilanjutkan jika koneksi terputus, dan bertahan dari crash perangkat.
+
+```
+Anda menambah file baru
+    ↓ (otomatis, tanpa interaksi)
+Terdeteksi → Dikompres → Dienkripsi → Antrian upload
+    ↓
+Upload langsung ke object storage (melewati server kami)
+    ↓
+Terverifikasi → Notifikasi: "File aman dicadangkan"
+    ↓ (opsional)
+"Hapus dari perangkat untuk bebaskan 2.4 GB?"
+```
+
+### 📱 Web, Android, iOS — Satu Codebase
+
+Tersedia di semua platform utama. Satu akun, semua perangkat tersinkronisasi. Menggunakan Capacitor untuk mobile dengan dukungan background sync native.
+
+### 💰 Bayar Sesuai Penggunaan
+
+Tidak ada paket storage yang dipaksakan. Tidak ada biaya tersembunyi.
+
+| Komponen | Tarif |
+|---|---|
+| Storage aktif | **Rp 210 / GB / bulan** |
+| Download | **Gratis** hingga 3× usage aktif |
+| Download setelah limit | Throttling kecepatan (tidak pernah diblokir) |
+
+### 🗑️ Optimalkan Storage Perangkat
+
+Setelah backup terverifikasi, QRD Storage menyarankan penghapusan file lokal. File tetap bisa diakses kapan saja dari cloud. Anda memilih: hapus semua, pilih manual, atau biarkan di perangkat.
 
 ---
 
-# Main User Experience
+## Arsitektur
 
-QRD STORAGE dirancang agar terasa seperti:
+### Zero-Trust Security Model
 
-> silent encrypted storage layer untuk semua device pengguna.
+QRD Storage dirancang dengan asumsi bahwa **tidak ada infrastruktur yang bisa dipercaya** — termasuk backend kami sendiri.
 
-Workflow utama:
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    PERANGKAT PENGGUNA                       │
+│                                                             │
+│  File  →  [Compress]  →  [Encrypt AES-256-GCM]  →  Chunk   │
+│                              ↑                              │
+│                     Key hanya di memory                     │
+│                     Tidak pernah dikirim                    │
+└──────────────────────────────┬──────────────────────────────┘
+                               │  Encrypted chunks only
+                               │
+┌──────────────────────────────▼──────────────────────────────┐
+│                      QRD API SERVER                         │
+│                                                             │
+│  • Autentikasi & device management                          │
+│  • Generate signed upload URL                               │
+│  • Simpan metadata (bukan konten)                           │
+│  • Billing & usage tracking                                 │
+│  • ❌ TIDAK PERNAH menerima file plaintext                  │
+└──────────────────────────────┬──────────────────────────────┘
+                               │  Signed URL
+                               │  (upload langsung)
+┌──────────────────────────────▼──────────────────────────────┐
+│                    OBJECT STORAGE                           │
+│         Backblaze B2 / Wasabi / Cloudflare R2               │
+│                                                             │
+│  • Hanya menyimpan encrypted blobs                          │
+│  • Tidak bisa membaca isi file                              │
+│  • /{userId}/{deviceId}/{fileId}/{chunkIndex}.enc           │
+└─────────────────────────────────────────────────────────────┘
+```
 
-```text
-User selects folders
-        ↓
-Background watcher monitors changes
-        ↓
-Files encrypted locally
-        ↓
-Encrypted chunks uploaded directly to B2
-        ↓
-Metadata persisted
-        ↓
-Upload verified
-        ↓
-User notified safely backed up
-        ↓
-App recommends local cleanup
+### Upload Architecture
+
+File **tidak pernah melewati server kami**. Client meminta signed URL, lalu mengupload langsung ke object storage. Ini lebih aman, lebih cepat, dan lebih murah.
+
+```
+Client                    API Server               Object Storage
+  │                           │                          │
+  │── POST /uploads/session ──►│                          │
+  │                           │── authorize ────────────►│
+  │◄── signed URL ────────────│◄── uploadUrl ────────────│
+  │                           │                          │
+  │── PUT (encrypted) ───────────────────────────────────►│
+  │                           │                          │
+  │── POST /uploads/verify ───►│                          │
+  │                           │── verify checksum ───────►│
+  │◄── confirmed ─────────────│                          │
+```
+
+### Stack Teknologi
+
+| Layer | Teknologi |
+|---|---|
+| **Backend** | NestJS + Fastify, TypeScript strict |
+| **Database** | PostgreSQL + Prisma ORM |
+| **Queue** | Redis + BullMQ |
+| **Web Frontend** | Next.js App Router, React, TailwindCSS |
+| **Mobile** | Capacitor (Android + iOS) |
+| **Enkripsi Client** | Web Crypto API (AES-256-GCM, PBKDF2) |
+| **Object Storage** | Backblaze B2, Wasabi, Cloudflare R2 |
+| **Realtime** | WebSocket Gateway (NestJS) |
+| **Monorepo** | Turborepo + pnpm workspaces |
+
+---
+
+## Struktur Monorepo
+
+```
+qrd-storage/
+│
+├── apps/
+│   ├── api/                    # NestJS backend
+│   │   ├── src/
+│   │   │   ├── auth/           # JWT, refresh token, Argon2id
+│   │   │   ├── devices/        # Device registration & management
+│   │   │   ├── files/          # Upload sessions, metadata, download URLs
+│   │   │   ├── billing/        # Usage tracking, Rp210/GB billing
+│   │   │   ├── sync/           # WebSocket gateway, realtime events
+│   │   │   └── workers/        # BullMQ: verify, billing, cleanup
+│   │   └── prisma/
+│   │       └── schema.prisma   # User, Device, File, Chunk, Billing models
+│   │
+│   └── web/                    # Next.js + Capacitor (Web/Android/iOS)
+│       ├── src/
+│       │   ├── app/            # App Router pages
+│       │   ├── components/     # UI components
+│       │   └── lib/            # API client, sync queue, session
+│       ├── android/            # Capacitor Android project
+│       └── ios/                # Capacitor iOS project
+│
+├── packages/
+│   ├── crypto/                 # ⚠️ Client-side only — enkripsi & kompresi
+│   │   ├── src/
+│   │   │   ├── keys.ts         # Key derivation (PBKDF2 → AES-256-GCM key)
+│   │   │   ├── encrypt.ts      # AES-256-GCM encrypt/decrypt per chunk
+│   │   │   ├── compress.ts     # Gzip via CompressionStream API
+│   │   │   └── worker.ts       # Web Worker wrapper (non-blocking UI)
+│   │
+│   ├── storage-sdk/            # Storage provider abstraction
+│   │   ├── src/
+│   │   │   ├── IStorageProvider.ts
+│   │   │   ├── providers/
+│   │   │   │   ├── BackblazeB2.ts
+│   │   │   │   ├── Wasabi.ts
+│   │   │   │   └── CloudflareR2.ts
+│   │   │   └── multipart.ts    # Chunked/resumable upload helpers
+│   │
+│   ├── sync-core/              # Sync engine (filesystem watcher + queue)
+│   │   ├── src/
+│   │   │   ├── watcher.ts      # File change detection
+│   │   │   ├── queue.ts        # IndexedDB sync job queue
+│   │   │   ├── state-machine.ts # DISCOVERED → ENCRYPTING → SYNCED
+│   │   │   └── background.ts   # Capacitor BackgroundTask integration
+│   │
+│   ├── shared-types/           # TypeScript contracts (DTOs, events, enums)
+│   ├── ui/                     # Shared React components
+│   └── api-client/             # Type-safe API client + TanStack Query hooks
+│
+├── infrastructure/
+│   ├── docker/
+│   ├── terraform/
+│   └── kubernetes/
+│
+├── docker-compose.yml          # PostgreSQL + Redis untuk development
+├── turbo.json
+└── pnpm-workspace.yaml
 ```
 
 ---
 
-# Core Features
+## Cara Kerja dari Sudut Pandang Pengguna
 
-## Storage & Sync
+### 1. Pertama Kali Setup
 
-- automatic folder sync
-- background uploads
-- resumable uploads
-- chunked uploads
-- offline queue persistence
-- cloud-only file architecture
-- restore-on-demand
-- selective sync
-- device sync management
-
----
-
-## Security
-
-- AES-256-GCM encryption
-- Argon2id key derivation
-- local-first encryption
-- signed upload sessions
-- JWT authentication
-- refresh token rotation
-- device registration
-- integrity verification
-
----
-
-## Storage Optimization
-
-- automatic cleanup recommendations
-- cloud-backed storage
-- smart local file removal
-- storage usage estimation
-- restore anytime
-
----
-
-# Architecture Overview
-
-## High-Level Architecture
-
-```text
-Frontend Apps
-    ↓
-API Gateway
-    ↓
-Backend API
-    ↓
-Auth + Metadata Services
-    ↓
-PostgreSQL
-
-Client Device
-    ↓
-Local Encryption Layer
-    ↓
-Chunk Upload Engine
-    ↓
-Signed Upload URLs
-    ↓
-Backblaze B2
+```
+Install app  →  Daftar akun  →  Password Anda digunakan untuk
+                                derive encryption key (lokal)
+                                    ↓
+                                Pilih folder yang ingin disinkronkan
+                                    ↓
+                                Selesai. QRD Storage bekerja otomatis.
 ```
 
----
+### 2. Sehari-hari (Tanpa Interaksi)
 
-# Sync Engine Architecture
+Anda bekerja normal. QRD Storage memantau di latar belakang:
 
-QRD STORAGE dibangun di atas event-driven sync architecture.
+- File baru atau berubah → otomatis masuk antrian
+- Dikompres + dienkripsi di background thread
+- Upload langsung ke cloud saat ada koneksi
+- Jika koneksi putus → upload dilanjutkan otomatis saat reconnect
+- Notifikasi tenang: *"47 file berhasil dicadangkan"*
 
-```text
-Filesystem Watcher
-        ↓
-Sync Queue
-        ↓
-Chunk Splitter
-        ↓
-Local Encryption
-        ↓
-Upload Scheduler
-        ↓
-Direct Upload
-        ↓
-Verification
-        ↓
-Metadata Reconciliation
-```
+### 3. Optimalkan Storage Perangkat
 
----
+Setelah backup terverifikasi, Anda mendapat saran:
 
-# File Lifecycle
+> *"Video dari bulan lalu sudah aman dicadangkan (3.2 GB). Hapus dari perangkat untuk bebaskan ruang?"*
 
-QRD STORAGE menggunakan explicit sync state machine.
+Pilihan: **Hapus semua** · **Pilih manual** · **Biarkan**
 
-```text
-DISCOVERED
-HASHING
-ENCRYPTING
-QUEUED
-UPLOADING
-VERIFYING
-SYNCED
-FAILED
-CONFLICTED
-RESTORING
-```
+File yang dihapus tetap bisa diakses dan diunduh kapan saja.
 
-Pendekatan ini membantu:
-- resumable uploads
-- crash recovery
-- offline sync
-- retry orchestration
-- distributed reliability
+### 4. Akses &amp; Preview File
+
+Dashboard menampilkan semua file terbacking dalam tampilan galeri:
+
+- Grid atau list view
+- Filter: Foto / Video / Dokumen / Semua
+- Preview langsung di browser tanpa download penuh
+- Download file → didekripsi otomatis di perangkat Anda
 
 ---
 
-# Storage Model
+## Setup Development
 
-QRD STORAGE menggunakan:
-- usage-based pricing
-- flexible storage billing
-- no forced quota packages
+### Prasyarat
 
-Philosophy:
+- Node.js 20+
+- pnpm 9+
+- Docker &amp; Docker Compose
+- (Untuk iOS) macOS + Xcode + CocoaPods
 
-> Use what you need. Pay only for what you use.
-
-Pricing:
-- Rp210 / GB / month
-
-Download policy:
-- free downloads up to 3× active storage usage
-- speed throttling after limit
-- downloads never blocked
-
----
-
-# Repository Structure
-
-```text
-apps/
-  api/
-  web/
-
-packages/
-  crypto/
-  storage-sdk/
-  shared-types/
-  ui/
-  sync-core/        (planned)
-  local-db/         (planned)
-```
-
----
-
-# Applications
-
-## apps/api
-
-NestJS backend:
-- authentication
-- device management
-- upload session generation
-- metadata persistence
-- upload verification
-- billing logic
-
-Stack:
-- NestJS
-- Fastify
-- Prisma
-- PostgreSQL
-- BullMQ
-- Redis
-
----
-
-## apps/web
-
-Next.js dashboard:
-- login/register
-- storage dashboard
-- sync monitoring
-- billing estimation
-- cloud file browsing
-- restore management
-
-Stack:
-- Next.js App Router
-- React
-- TailwindCSS
-- shadcn/ui
-- TypeScript strict mode
-
----
-
-# Shared Packages
-
-## packages/crypto
-
-Shared cryptographic utilities:
-- Argon2id
-- AES-256-GCM
-- chunk encryption
-- hierarchical key derivation
-- secure random generation
-
-Important:
-- encryption occurs locally
-- plaintext never uploaded
-
----
-
-## packages/storage-sdk
-
-Backblaze B2 integration:
-- authorization
-- signed upload URLs
-- direct upload payloads
-- upload session helpers
-
-Purpose:
-- reduce backend bandwidth
-- improve scalability
-- reduce infrastructure costs
-
----
-
-## packages/shared-types
-
-Shared TypeScript contracts:
-- DTOs
-- auth payloads
-- upload sessions
-- sync metadata
-- device registration payloads
-
----
-
-## packages/ui
-
-Reusable UI components:
-- Button
-- Input
-- Card
-- Icons
-- shared layout primitives
-
----
-
-# Mobile Support
-
-QRD STORAGE menggunakan Capacitor untuk mobile scaffolding.
-
-Supported:
-- Android
-- iOS
-
-Current structure:
-
-```text
-apps/web/android
-apps/web/ios
-```
-
-Future direction:
-- React Native sync engine
-- native filesystem integrations
-- background sync services
-
----
-
-# Security Model
-
-QRD STORAGE menggunakan zero-trust security architecture.
-
-Backend:
-- cannot decrypt files
-- cannot inspect content
-- cannot access plaintext uploads
-
-Object storage:
-- stores encrypted chunks only
-
-Encryption:
-- happens locally
-- before upload
-- automatically in background
-
----
-
-# Threat Model
-
-QRD STORAGE mengasumsikan:
-- storage providers may be compromised
-- uploads may fail partially
-- devices may disconnect unexpectedly
-- network connectivity may be unreliable
-
-Karena itu sistem dirancang untuk:
-- resumable uploads
-- retry orchestration
-- integrity verification
-- offline recovery
-- crash-safe persistence
-
----
-
-# Scalability Principles
-
-QRD STORAGE dirancang untuk:
-- millions of files
-- millions of sync events
-- distributed upload workers
-- large file uploads
-- horizontal backend scaling
-
-Scalability decisions:
-- direct signed uploads
-- stateless APIs
-- chunk-based uploads
-- async event-driven architecture
-- persistent local queues
-
----
-
-# Observability
-
-Storage systems sangat sulit di-debug.
-
-QRD STORAGE menggunakan:
-- structured logging
-- correlation IDs
-- sync tracing
-- upload diagnostics
-
-Important tracing IDs:
-
-```text
-syncId
-fileId
-chunkId
-deviceId
-uploadSessionId
-```
-
----
-
-# Development Philosophy
-
-Every engineering decision should prioritize:
-- privacy
-- user ownership
-- sync correctness
-- low infrastructure cost
-- scalability
-- maintainability
-- reliability
-
-Never sacrifice:
-- encryption
-- user control
-- transparency
-
-for:
-- analytics
-- monetization
-- convenience
-
----
-
-# Getting Started
-
-## Install dependencies
+### 1. Clone &amp; Install
 
 ```bash
+git clone https://github.com/vetocatprotocol/qrd-storage.git
+cd qrd-storage
 pnpm install
 ```
 
----
-
-## Setup environment
+### 2. Jalankan Infrastruktur
 
 ```bash
-cp .env.example .env
+# PostgreSQL + Redis
+docker compose up -d
 ```
 
-Configure:
+### 3. Konfigurasi Environment
+
+```bash
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env.local
+```
+
+Edit `apps/api/.env`:
 
 ```env
-DATABASE_URL=
-JWT_SECRET=
+# Database
+DATABASE_URL="postgresql://qrd:qrdpassword@localhost:5432/qrd_dev"
 
-B2_ACCOUNT_ID=
-B2_APPLICATION_KEY=
-B2_BUCKET_ID=
+# Auth
+JWT_SECRET="ganti-dengan-secret-yang-kuat-minimal-64-karakter"
+
+# Object Storage (pilih salah satu)
+STORAGE_PROVIDER="b2"                   # b2 | wasabi | r2
+
+# Backblaze B2
+B2_ACCOUNT_ID="your-account-id"
+B2_APPLICATION_KEY="your-application-key"
+B2_BUCKET_ID="your-bucket-id"
+
+# Wasabi (opsional)
+# WASABI_ACCESS_KEY="..."
+# WASABI_SECRET_KEY="..."
+# WASABI_BUCKET="..."
+# WASABI_REGION="ap-southeast-1"
+
+# Cloudflare R2 (opsional)
+# R2_ACCOUNT_ID="..."
+# R2_ACCESS_KEY_ID="..."
+# R2_SECRET_ACCESS_KEY="..."
+# R2_BUCKET="..."
+
+# Redis
+REDIS_URL="redis://localhost:6379"
 ```
 
----
+Edit `apps/web/.env.local`:
 
-## Prisma setup
+```env
+NEXT_PUBLIC_API_URL="http://localhost:4000/api"
+```
+
+### 4. Setup Database
 
 ```bash
 cd apps/api
-
 pnpm prisma:generate
 pnpm prisma:migrate:dev --name init
 ```
 
----
-
-## Run development servers
-
-From root:
+### 5. Jalankan
 
 ```bash
-pnpm dev
-```
-
-Or run separately:
-
-```bash
-cd apps/api
+# Dari root — jalankan semua sekaligus
 pnpm dev
 
-cd apps/web
-pnpm dev
+# Atau masing-masing
+cd apps/api && pnpm dev    # API: http://localhost:4000
+cd apps/web && pnpm dev    # Web: http://localhost:3000
 ```
 
 ---
 
-# Mobile Development
+## Build Mobile
 
-## Android
+### Android
 
 ```bash
 cd apps/web
 
-pnpm export
+# Build Next.js sebagai static export
+pnpm build && pnpm export
+
+# Sync ke Capacitor
 pnpm exec cap sync android
 
+# Build APK debug
 cd android
 ./gradlew assembleDebug
+# Output: android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Requirements:
-- Android SDK
-- JAVA_HOME
-- platform-tools
+**Prasyarat:** Android SDK, `JAVA_HOME`, platform-tools di PATH.
 
----
-
-## iOS
-
-Requirements:
-- macOS
-- Xcode
-- CocoaPods
-
-Workflow:
+### iOS
 
 ```bash
-pnpm export
+cd apps/web
+
+pnpm build && pnpm export
 pnpm exec cap sync ios
+
+# Buka di Xcode
+open ios/App/App.xcworkspace
 ```
 
-Then open:
+**Prasyarat:** macOS, Xcode 15+, CocoaPods (`pod install` di dalam `ios/App/`).
 
-```text
-apps/web/ios/App.xcworkspace
+---
+
+## API Reference
+
+### Autentikasi
+
+```
+POST /api/auth/register     Daftar akun baru
+POST /api/auth/login        Login, mendapat access + refresh token
+POST /api/auth/refresh      Perbarui access token menggunakan refresh token
+```
+
+### Devices
+
+```
+POST /api/devices/register  Daftarkan perangkat baru, mendapat deviceKey
+GET  /api/devices           List semua perangkat terdaftar
+```
+
+### Files &amp; Upload
+
+```
+POST /api/uploads/session           Buat upload session (file kecil, single PUT)
+POST /api/uploads/multipart/init    Mulai multipart upload (file besar)
+POST /api/uploads/multipart/:id/part  Dapatkan signed URL per chunk
+POST /api/uploads/multipart/:id/complete  Finalisasi multipart upload
+POST /api/uploads/:id/verify        Verifikasi checksum setelah upload
+
+GET  /api/files                     List file (filter, sort, paginasi)
+GET  /api/files/:id                 Metadata satu file
+GET  /api/files/:id/download-url    Signed download URL (15 menit)
+DELETE /api/files/:id               Hapus file dari storage
+POST /api/files/:id/local-delete-hint  Tandai file sudah dihapus dari lokal
+```
+
+### Billing
+
+```
+GET  /api/billing/usage     Usage saat ini (bytes, file count)
+GET  /api/billing/estimate  Estimasi tagihan bulan ini
+GET  /api/billing/records   Riwayat tagihan
 ```
 
 ---
 
-# Environment Variables
+## Model Keamanan
 
-```env
-DATABASE_URL=
-JWT_SECRET=
+### Apa yang QRD Storage bisa lihat
 
-B2_ACCOUNT_ID=
-B2_APPLICATION_KEY=
-B2_BUCKET_ID=
+| Data | Bisa Dilihat QRD? |
+|---|---|
+| Isi file Anda | ❌ Tidak |
+| Nama file (terenkripsi) | ❌ Tidak |
+| Ukuran file terenkripsi | ✅ Ya (metadata billing) |
+| Jumlah file | ✅ Ya |
+| Kapan Anda upload | ✅ Ya |
+| Email Anda | ✅ Ya (untuk akun) |
+
+### Threat Model
+
+QRD Storage didesain tahan terhadap:
+
+- **Kompromi object storage** → Attacker hanya mendapat encrypted blobs tanpa kunci
+- **Kompromi backend** → Backend tidak pernah menyimpan atau menerima plaintext
+- **Man-in-the-middle** → Upload via HTTPS, file sudah terenkripsi sebelum transmisi
+- **Upload partial/crash** → Resumable upload dengan checkpoint per chunk
+- **Koneksi tidak stabil** → Offline queue persisten di IndexedDB/SQLite lokal
+
+### Enkripsi Detail
+
+```
+Algoritma    : AES-256-GCM (authenticated encryption)
+Key Size     : 256 bits
+IV           : 96 bits, random per chunk (via crypto.getRandomValues)
+Tag          : 128 bits GCM authentication tag
+KDF          : PBKDF2-SHA256 (600.000 iterasi) atau Argon2id
+Key Storage  : In-memory only, tidak pernah persisted
+Kompresi     : gzip via CompressionStream API (sebelum enkripsi)
 ```
 
 ---
 
-# Current Development Status
+## Background Workers (BullMQ)
 
-## Implemented
-
-- monorepo architecture
-- NestJS backend
-- Prisma schema
-- JWT auth
-- refresh token rotation
-- device registration
-- upload session generation
-- Backblaze B2 integration
-- shared crypto utilities
-- Next.js dashboard scaffold
-- Capacitor mobile scaffold
+| Worker | Fungsi | Frekuensi |
+|---|---|---|
+| `upload-verify` | Verifikasi checksum setelah upload selesai | Per upload |
+| `billing-aggregate` | Hitung usage dan generate billing record | Harian |
+| `cleanup-suggest` | Kirim notifikasi saran hapus file lokal | Setelah verify |
+| `download-track` | Catat bandwidth download untuk throttling | Per download |
+| `orphan-cleanup` | Hapus chunk tanpa file referensi di DB | Mingguan |
 
 ---
 
-## In Progress
+## Pricing
 
-- sync-core package
-- resumable upload engine
-- chunk manifest architecture
-- persistent local queue
-- upload verification
-- realtime sync lifecycle
+QRD Storage menggunakan model **pay-as-you-go** — tidak ada paket, tidak ada minimum, tidak ada lock-in.
 
----
+```
+Storage aktif      :  Rp 210 / GB / bulan
+                      (dihitung rata-rata harian)
 
-## Planned
+Download           :  GRATIS sampai 3× total storage aktif Anda
+                      (contoh: punya 10 GB → 30 GB download gratis/bulan)
 
-- cloud-only files
-- restore-on-demand
-- selective sync
-- sync conflict resolution
-- chunk deduplication
-- storage optimization engine
-- distributed workers
-- multi-provider storage support
+Setelah batas      :  Throttling kecepatan
+                      Download TIDAK PERNAH diblokir
+```
+
+**Contoh tagihan:**
+- 50 GB foto dan video tersimpan → **Rp 10.500 / bulan**
+- 200 GB backup dokumen kerja → **Rp 42.000 / bulan**
 
 ---
 
-# Long-Term Vision
+## Realtime Events (WebSocket)
 
-QRD STORAGE aims to become:
-- encrypted sync infrastructure
-- intelligent cloud storage layer
-- privacy-first storage ecosystem
-- scalable encrypted storage network
+Terhubung ke `ws://api/sync` setelah autentikasi untuk menerima event live:
 
-QRD STORAGE is not just cloud storage.
-
-It is:
-
-> your personal encrypted storage layer.
+```typescript
+// Events yang dikirim server ke client
+upload:progress     { fileId, chunkIndex, totalChunks, percent }
+upload:complete     { fileId, fileName, encryptedSize }
+upload:failed       { fileId, reason, retryable }
+cleanup:suggestion  { files: FileRef[], totalBytes, freedIfDeleted }
+device:online       { deviceId, deviceName }
+device:offline      { deviceId }
+sync:conflict       { fileId, deviceA, deviceB }
+restore:progress    { fileId, percent }
+```
 
 ---
 
-# License
+## Roadmap
 
-Add appropriate LICENSE file before public distribution.
+### Segera (Q3 2026)
+- [x] Auth system (JWT + Argon2id)
+- [x] Device registration
+- [x] Upload session ke B2
+- [x] Web + Android + iOS scaffold
+- [ ] `packages/crypto` — AES-256-GCM client encryption
+- [ ] Multipart/chunked upload pipeline
+- [ ] Sync queue (IndexedDB)
+- [ ] File list &amp; gallery UI
+
+### Berikutnya (Q4 2026)
+- [ ] Resumable upload dengan checkpoint
+- [ ] Background sync (Capacitor BackgroundTask)
+- [ ] Download + decrypt client-side
+- [ ] WebSocket realtime progress
+- [ ] Billing system &amp; dashboard
+- [ ] Storage optimization (cleanup suggestion)
+
+### Masa Depan
+- [ ] Wasabi &amp; Cloudflare R2 support
+- [ ] Selective sync per folder per device
+- [ ] Conflict resolution UI
+- [ ] Sync history &amp; file versioning
+- [ ] Desktop app (Tauri)
+- [ ] Self-hosted option
+- [ ] End-to-end encrypted sharing (link berbatas waktu)
+
+---
+
+## Kontribusi
+
+QRD Storage adalah produk proprietary. Untuk saat ini tidak menerima kontribusi eksternal.
+
+Jika Anda menemukan vulnerability keamanan, laporkan secara bertanggung jawab ke:
+**security@qrdstorage.id**
+
+---
+
+## Lisensi
+
+Proprietary — lihat [LICENSE](./LICENSE) untuk detail lengkap.
+
+---
+
+<div align="center">
+
+**QRD Storage** — Dibangun di atas prinsip:
+*privasi bukan fitur, privasi adalah fondasi.*
+
+[Website](https://qrdstorage.id) · [Dokumentasi](https://docs.qrdstorage.id) · [Status](https://status.qrdstorage.id)
+
+</div>
