@@ -1,181 +1,849 @@
-# QRD Storage
+# QRD STORAGE
 
-QRD Storage adalah platform sinkronisasi terenkripsi dengan prinsip privasi-pertama. Repositori ini adalah monorepo yang berisi backend API, dashboard web, paket bersama untuk enkripsi dan integrasi Backblaze B2, serta scaffolding mobile (Capacitor).
+> Your encrypted data, your ownership, your control.
 
-Ringkasan singkat:
-- Zero-trust, client-side encryption
-- Upload signed langsung ke Backblaze B2
-- Registrasi perangkat dan manajemen sesi unggah
+QRD STORAGE adalah privacy-first encrypted sync platform yang dirancang untuk:
+- sinkronisasi otomatis
+- backup terenkripsi
+- optimasi storage perangkat
+- cloud storage usage-based
+- seamless background sync
 
-## Struktur repositori
+QRD STORAGE bukan cloud drive tradisional.
 
-- [apps/api](apps/api) — NestJS backend (auth, device, upload sessions, Prisma)
-- [apps/web](apps/web) — Next.js dashboard (App Router)
-- [packages/crypto](packages/crypto) — utilitas enkripsi bersama
-- [packages/storage-sdk](packages/storage-sdk) — helper Backblaze B2
-- [packages/shared-types](packages/shared-types) — tipe bersama untuk DTOs dan payload
-- [packages/ui](packages/ui) — komponen UI yang dapat dipakai ulang
-
-## Mobile apps
-
-QRD Storage menyediakan scaffolding aplikasi native menggunakan Capacitor:
-
-- `apps/web/android` — proyek Android (Gradle) yang dibangun dari web assets (`out/`) via Capacitor. Build script mengacu pada `capacitor` dan memeriksa `google-services.json` untuk push notifications.
-- `apps/web/ios` — proyek iOS (Xcode workspace + CocoaPods) yang memuat pod `Capacitor` dan `CapacitorCordova`. iOS build memerlukan macOS & Xcode.
-
-Catatan: sebelum menjalankan `cap sync` pastikan menjalankan `pnpm export` dari `apps/web` untuk menghasilkan `out/` yang sesuai dengan `capacitor.config.ts`.
-
-## Penjelasan isi folder (lebih detail)
-
-- `apps/api`: Modul NestJS terpisah untuk `auth`, `devices`, `files`, dan `prisma` (service DB). `main.ts` menggunakan Fastify, global `ValidationPipe`, serta prefix API `/api`.
-- `apps/web`: Next.js App Router dengan halaman `login`, `register`, dan `dashboard`. Menggunakan `@qrd/ui` untuk komponen dan `lib/api.ts` untuk komunikasi dengan backend. Token disimpan di `localStorage` oleh `lib/session.ts`.
-- `packages/crypto`: Kode enkripsi (Argon2id derivation, AES-256-GCM chunk encryption). Fungsi ini digunakan untuk enkripsi client-side sebelum upload.
-- `packages/storage-sdk`: Client ringan untuk Backblaze B2 (authorize + get upload URL). Periksa apakah server menyimpan token berumur pendek atau hanya metadata.
-- `packages/shared-types`: Tipe TypeScript yang dibagi antara backend dan frontend (DTOs, responses).
-- `packages/ui`: Komponen React (Button, Input, Card, Icon) yang digunakan di `apps/web`.
-
-## Halaman penting untuk pengembang
-
-- `apps/api/src/auth` — endpoint `auth/login`, `auth/register`, dan mekanisme refresh token.
-- `apps/api/src/devices` — endpoint pendaftaran perangkat (`devices/register`) yang menghasilkan `deviceKey`.
-- `apps/api/src/files` — endpoint pembuatan sesi unggah (`uploads/session`) yang mengembalikan `uploadUrl` dan token untuk unggahan langsung ke Backblaze.
-- `apps/web/src/lib/api.ts` — wrapper fetch yang memanggil endpoint API; tambahkan handling 401/refresh jika ingin flow refresh otomatis.
-
-## Catatan onboarding mobile
-
-- Android (Linux/Codespaces): pastikan `JAVA_HOME`, Android SDK, dan platform-tools tersedia. Jalankan `pnpm export` lalu `pnpm exec cap sync android` sebelum `./gradlew assembleDebug`.
-- iOS (macOS): jalankan `pnpm export`, `pnpm exec cap sync ios`, lalu buka `apps/web/ios/App.xcworkspace` di Xcode dan jalankan `pod install` bila perlu.
-
-## Kesimpulan singkat
-
-Repositori ini berfungsi sebagai platform end-to-end: backend API untuk pembuatan sesi dan metadata, paket bersama untuk enkripsi dan integrasi storage, dashboard web, dan scaffolding mobile native via Capacitor. Dokumentasi dan script developer dapat ditambahkan lebih lanjut (contoh: `docker-compose` untuk DB, skrip setup Android SDK) untuk memperbaiki pengalaman onboarding.
-
-## Fitur utama
-
-- Autentikasi JWT (access + refresh)
-- Registrasi dan manajemen perangkat
-- Pembuatan sesi unggah yang mengeluarkan parameter signed untuk Backblaze B2
-- Prisma ORM untuk model pengguna, perangkat, file, dan sesi unggah
-- Utilitas enkripsi: Argon2id, AES-256-GCM, derivasi kunci
-
-## Prasyarat
-
-- Node.js 18+ (direkomendasikan)
-- pnpm
-- Postgres untuk pengembangan lokal (atau gunakan SQLite jika dikonfigurasi)
-- `JAVA_HOME` + Android SDK untuk build Android (opsional)
-
-## Mulai cepat (lokal)
-
-1. Pasang dependency workspace dari root:
-
-```bash
-pnpm install
-```
-
-2. Salin environment file dan isi variabel penting:
-
-```bash
-cp .env.example .env
-# Edit .env sesuai lingkungan Anda (DATABASE_URL, JWT_SECRET, B2_*)
-```
-
-3. Jalankan migrasi Prisma dan generate client (dari `apps/api`):
-
-```bash
-cd apps/api
-pnpm prisma:generate
-pnpm prisma:migrate:dev --name init
-```
-
-4. Menjalankan layanan pengembangan:
-
-- Dari root (menjalankan semua service developer pipeline jika tersedia):
-
-```bash
-pnpm dev
-```
-
-- Atau jalankan masing-masing:
-
-```bash
-cd apps/api
-pnpm dev
-
-cd ../../apps/web
-pnpm dev
-```
-
-API default tersedia di port yang dikonfigurasi (mis. `http://localhost:4000`) dan web Next.js di port yang dilaporkan oleh Next.
-
-## Perintah penting
-
-- `pnpm -w install` — instal semua dependency workspace
-- `pnpm dev` — jalankan pipeline development (dalam workspace)
-- `pnpm -w build` — build seluruh workspace
-- `pnpm -w format` — jalankan format code (Prettier/ESLint)
-
-Perintah khusus backend (dari `apps/api`):
-
-- `pnpm dev` — run NestJS
-- `pnpm build` — build backend
-- `pnpm prisma:generate` — generate Prisma client
-- `pnpm prisma:migrate:dev` — apply migrations
-- `pnpm prisma:studio` — buka Prisma Studio
-
-## Pengembangan mobile (Capacitor)
-
-Scaffold native berada di `apps/web/android` dan `apps/web/ios`.
-
-- Android debug dapat dibangun dari Linux/Codespaces jika toolchain Android terpasang:
-
-```bash
-cd apps/web
-pnpm export
-pnpm exec cap sync android
-cd android
-./gradlew assembleDebug
-```
-
-- iOS memerlukan Mac untuk membangun IPA dan menggunakan Xcode.
-
-## Paket internal
-
-- `packages/crypto` — fungsi-fungsi enkripsi dan derivasi kunci
-- `packages/storage-sdk` — integrasi Backblaze B2 untuk signed uploads
-- `packages/shared-types` — tipe TypeScript yang dibagikan antara frontend dan backend
-- `packages/ui` — primitives UI untuk aplikasi web
-
-Lihat masing-masing paket untuk dokumentasi API lebih detail.
-
-## Variabel lingkungan penting
-
-- `DATABASE_URL` — string koneksi Postgres
-- `JWT_SECRET` — secret untuk menandatangani JWT
-- `B2_ACCOUNT_ID`, `B2_APPLICATION_KEY`, `B2_BUCKET_ID` — kredensial Backblaze B2
-
-Pastikan `.env` berisi variabel ini sebelum menjalankan migrasi atau server.
-
-## Testing dan linting
-
-- Gunakan perintah workspace untuk menjalankan test/lint jika tersedia (lihat `package.json` di root dan di setiap workspace).
-
-## Kontribusi
-
-1. Fork atau buat branch dari `main`.
-2. Buat perubahan kecil, jalankan test dan format.
-3. Buka Pull Request dengan deskripsi perubahan.
-
-Silakan tambahkan issue atau diskusi jika Anda ingin mengusulkan fitur besar.
-
-## Kontak
-
-Jika Anda butuh bantuan lebih lanjut, buka issue di repository atau hubungi pemilik proyek.
-
-## Lisensi
-
-Lisensi proyek ada di file lisensi (jika tersedia). Jika belum, tambahkan `LICENSE` yang sesuai.
+QRD STORAGE adalah:
+- encrypted sync ecosystem
+- smart storage offloading platform
+- personal encrypted cloud vault
+- zero-trust storage infrastructure
 
 ---
 
-Dokumentasi ini dirancang untuk memudahkan pengembang baru memulai dengan monorepo QRD Storage. Ingin saya tambahkan bagian perintah debug spesifik atau contoh `.env`? 
+# Core Philosophy
+
+QRD STORAGE dibangun berdasarkan prinsip:
+
+## 1. User Ownership First
+
+Pengguna harus:
+- memiliki kontrol penuh terhadap data
+- mengontrol file dan perilaku sinkronisasi
+- memiliki ownership terhadap encryption keys
+- bebas dari lock-in storage package
+
+---
+
+## 2. Zero-Trust Architecture
+
+QRD STORAGE mengasumsikan:
+- object storage tidak trusted
+- backend tidak trusted
+- plaintext tidak boleh keluar dari device
+
+Karena itu:
+- semua file dienkripsi sebelum upload
+- backend tidak pernah menerima plaintext file
+- object storage hanya menyimpan encrypted blobs
+
+---
+
+## 3. Privacy-First Storage
+
+QRD STORAGE memprioritaskan:
+- end-to-end encryption
+- minimal metadata collection
+- no behavioral tracking
+- no content inspection
+- transparent billing
+
+---
+
+# Product Vision
+
+QRD STORAGE dirancang menjadi:
+
+- personal encrypted cloud vault
+- intelligent storage optimization platform
+- seamless encrypted sync ecosystem
+- scalable storage infrastructure layer
+
+QRD STORAGE membantu pengguna:
+
+> menyimpan lebih banyak data tanpa membebani storage perangkat.
+
+---
+
+# Main User Experience
+
+QRD STORAGE dirancang agar terasa seperti:
+
+> silent encrypted storage layer untuk semua device pengguna.
+
+Workflow utama:
+
+```text
+User selects folders
+        ↓
+Background watcher monitors changes
+        ↓
+Files encrypted locally
+        ↓
+Encrypted chunks uploaded directly to B2
+        ↓
+Metadata persisted
+        ↓
+Upload verified
+        ↓
+User notified safely backed up
+        ↓
+App recommends local cleanup
+
+
+---
+
+Core Features
+
+Storage & Sync
+
+automatic folder sync
+
+background uploads
+
+resumable uploads
+
+chunked uploads
+
+offline queue persistence
+
+cloud-only file architecture
+
+restore-on-demand
+
+selective sync
+
+device sync management
+
+
+
+---
+
+Security
+
+AES-256-GCM encryption
+
+Argon2id key derivation
+
+local-first encryption
+
+signed upload sessions
+
+JWT authentication
+
+refresh token rotation
+
+device registration
+
+integrity verification
+
+
+
+---
+
+Storage Optimization
+
+automatic cleanup recommendations
+
+cloud-backed storage
+
+smart local file removal
+
+storage usage estimation
+
+restore anytime
+
+
+
+---
+
+Architecture Overview
+
+High-Level Architecture
+
+Frontend Apps
+    ↓
+API Gateway
+    ↓
+Backend API
+    ↓
+Auth + Metadata Services
+    ↓
+PostgreSQL
+
+Client Device
+    ↓
+Local Encryption Layer
+    ↓
+Chunk Upload Engine
+    ↓
+Signed Upload URLs
+    ↓
+Backblaze B2
+
+
+---
+
+Sync Engine Architecture
+
+QRD STORAGE dibangun di atas event-driven sync architecture.
+
+Filesystem Watcher
+        ↓
+Sync Queue
+        ↓
+Chunk Splitter
+        ↓
+Local Encryption
+        ↓
+Upload Scheduler
+        ↓
+Direct Upload
+        ↓
+Verification
+        ↓
+Metadata Reconciliation
+
+
+---
+
+File Lifecycle
+
+QRD STORAGE menggunakan explicit sync state machine.
+
+DISCOVERED
+HASHING
+ENCRYPTING
+QUEUED
+UPLOADING
+VERIFYING
+SYNCED
+FAILED
+CONFLICTED
+RESTORING
+
+Pendekatan ini membantu:
+
+resumable uploads
+
+crash recovery
+
+offline sync
+
+retry orchestration
+
+distributed reliability
+
+
+
+---
+
+Storage Model
+
+QRD STORAGE menggunakan:
+
+usage-based pricing
+
+flexible storage billing
+
+no forced quota packages
+
+
+Philosophy:
+
+> Use what you need. Pay only for what you use.
+
+
+
+Pricing:
+
+Rp210 / GB / month
+
+
+Download policy:
+
+free downloads up to 3× active storage usage
+
+speed throttling after limit
+
+downloads never blocked
+
+
+
+---
+
+Repository Structure
+
+apps/
+  api/
+  web/
+
+packages/
+  crypto/
+  storage-sdk/
+  shared-types/
+  ui/
+  sync-core/        (planned)
+  local-db/         (planned)
+
+
+---
+
+Applications
+
+apps/api
+
+NestJS backend:
+
+authentication
+
+device management
+
+upload session generation
+
+metadata persistence
+
+upload verification
+
+billing logic
+
+
+Stack:
+
+NestJS
+
+Fastify
+
+Prisma
+
+PostgreSQL
+
+BullMQ
+
+Redis
+
+
+
+---
+
+apps/web
+
+Next.js dashboard:
+
+login/register
+
+storage dashboard
+
+sync monitoring
+
+billing estimation
+
+cloud file browsing
+
+restore management
+
+
+Stack:
+
+Next.js App Router
+
+React
+
+TailwindCSS
+
+shadcn/ui
+
+TypeScript strict mode
+
+
+
+---
+
+Shared Packages
+
+packages/crypto
+
+Shared cryptographic utilities:
+
+Argon2id
+
+AES-256-GCM
+
+chunk encryption
+
+hierarchical key derivation
+
+secure random generation
+
+
+Important:
+
+encryption occurs locally
+
+plaintext never uploaded
+
+
+
+---
+
+packages/storage-sdk
+
+Backblaze B2 integration:
+
+authorization
+
+signed upload URLs
+
+direct upload payloads
+
+upload session helpers
+
+
+Purpose:
+
+reduce backend bandwidth
+
+improve scalability
+
+reduce infrastructure costs
+
+
+
+---
+
+packages/shared-types
+
+Shared TypeScript contracts:
+
+DTOs
+
+auth payloads
+
+upload sessions
+
+sync metadata
+
+device registration payloads
+
+
+
+---
+
+packages/ui
+
+Reusable UI components:
+
+Button
+
+Input
+
+Card
+
+Icons
+
+shared layout primitives
+
+
+
+---
+
+Mobile Support
+
+QRD STORAGE menggunakan Capacitor untuk mobile scaffolding.
+
+Supported:
+
+Android
+
+iOS
+
+
+Current structure:
+
+apps/web/android
+apps/web/ios
+
+Future direction:
+
+React Native sync engine
+
+native filesystem integrations
+
+background sync services
+
+
+
+---
+
+Security Model
+
+QRD STORAGE menggunakan zero-trust security architecture.
+
+Backend:
+
+cannot decrypt files
+
+cannot inspect content
+
+cannot access plaintext uploads
+
+
+Object storage:
+
+stores encrypted chunks only
+
+
+Encryption:
+
+happens locally
+
+before upload
+
+automatically in background
+
+
+
+---
+
+Threat Model
+
+QRD STORAGE mengasumsikan:
+
+storage providers may be compromised
+
+uploads may fail partially
+
+devices may disconnect unexpectedly
+
+network connectivity may be unreliable
+
+
+Karena itu sistem dirancang untuk:
+
+resumable uploads
+
+retry orchestration
+
+integrity verification
+
+offline recovery
+
+crash-safe persistence
+
+
+
+---
+
+Scalability Principles
+
+QRD STORAGE dirancang untuk:
+
+millions of files
+
+millions of sync events
+
+distributed upload workers
+
+large file uploads
+
+horizontal backend scaling
+
+
+Scalability decisions:
+
+direct signed uploads
+
+stateless APIs
+
+chunk-based uploads
+
+async event-driven architecture
+
+persistent local queues
+
+
+
+---
+
+Observability
+
+Storage systems sangat sulit di-debug.
+
+QRD STORAGE menggunakan:
+
+structured logging
+
+correlation IDs
+
+sync tracing
+
+upload diagnostics
+
+
+Important tracing IDs:
+
+syncId
+fileId
+chunkId
+deviceId
+uploadSessionId
+
+
+---
+
+Development Philosophy
+
+Every engineering decision should prioritize:
+
+privacy
+
+user ownership
+
+sync correctness
+
+low infrastructure cost
+
+scalability
+
+maintainability
+
+reliability
+
+
+Never sacrifice:
+
+encryption
+
+user control
+
+transparency
+
+
+for:
+
+analytics
+
+monetization
+
+convenience
+
+
+
+---
+
+Getting Started
+
+Install dependencies
+
+pnpm install
+
+
+---
+
+Setup environment
+
+cp .env.example .env
+
+Configure:
+
+DATABASE_URL=
+JWT_SECRET=
+
+B2_ACCOUNT_ID=
+B2_APPLICATION_KEY=
+B2_BUCKET_ID=
+
+
+---
+
+Prisma setup
+
+cd apps/api
+
+pnpm prisma:generate
+pnpm prisma:migrate:dev --name init
+
+
+---
+
+Run development servers
+
+From root:
+
+pnpm dev
+
+Or run separately:
+
+cd apps/api
+pnpm dev
+
+cd apps/web
+pnpm dev
+
+
+---
+
+Mobile Development
+
+Android
+
+cd apps/web
+
+pnpm export
+pnpm exec cap sync android
+
+cd android
+./gradlew assembleDebug
+
+Requirements:
+
+Android SDK
+
+JAVA_HOME
+
+platform-tools
+
+
+
+---
+
+iOS
+
+Requirements:
+
+macOS
+
+Xcode
+
+CocoaPods
+
+
+Workflow:
+
+pnpm export
+pnpm exec cap sync ios
+
+Then open:
+
+apps/web/ios/App.xcworkspace
+
+
+---
+
+Environment Variables
+
+DATABASE_URL=
+JWT_SECRET=
+
+B2_ACCOUNT_ID=
+B2_APPLICATION_KEY=
+B2_BUCKET_ID=
+
+
+---
+
+Current Development Status
+
+Implemented
+
+monorepo architecture
+
+NestJS backend
+
+Prisma schema
+
+JWT auth
+
+refresh token rotation
+
+device registration
+
+upload session generation
+
+Backblaze B2 integration
+
+shared crypto utilities
+
+Next.js dashboard scaffold
+
+Capacitor mobile scaffold
+
+
+
+---
+
+In Progress
+
+sync-core package
+
+resumable upload engine
+
+chunk manifest architecture
+
+persistent local queue
+
+upload verification
+
+realtime sync lifecycle
+
+
+
+---
+
+Planned
+
+cloud-only files
+
+restore-on-demand
+
+selective sync
+
+sync conflict resolution
+
+chunk deduplication
+
+storage optimization engine
+
+distributed workers
+
+multi-provider storage support
+
+
+
+---
+
+Long-Term Vision
+
+QRD STORAGE aims to become:
+
+encrypted sync infrastructure
+
+intelligent cloud storage layer
+
+privacy-first storage ecosystem
+
+scalable encrypted storage network
+
+
+QRD STORAGE is not just cloud storage.
+
+It is:
+
+> your personal encrypted storage layer.
+
+
+
+
+---
+
+License
+
+Add appropriate LICENSE file before public distribution.
