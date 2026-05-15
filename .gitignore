@@ -16,3 +16,36 @@ apps/web/out/
 apps/web/android/app/build/
 apps/web/ios/App/build/
 packages/ui/dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+
+# Lockfiles from other package managers
+package-lock.json
+yarn.lock
+
+# Build tool caches and task runners
+.cache/
+.parcel-cache/
+.turbo/
+.turbo/*
+.nyc_output/
+.eslintcache
+
+# Node / package manager caches
+.pnpm-store/
+
+# Android / iOS / Gradle
+android/.gradle/
+**/build/
+
+# Generated and runtime files
+.prisma/
+prisma/.client/
+
+# Misc
+Thumbs.db
+coverage/
