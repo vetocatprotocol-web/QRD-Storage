@@ -61,7 +61,6 @@ QRD STORAGE memprioritaskan:
 # Product Vision
 
 QRD STORAGE dirancang menjadi:
-
 - personal encrypted cloud vault
 - intelligent storage optimization platform
 - seamless encrypted sync ecosystem
@@ -97,78 +96,54 @@ Upload verified
 User notified safely backed up
         ↓
 App recommends local cleanup
-
-
----
-
-Core Features
-
-Storage & Sync
-
-automatic folder sync
-
-background uploads
-
-resumable uploads
-
-chunked uploads
-
-offline queue persistence
-
-cloud-only file architecture
-
-restore-on-demand
-
-selective sync
-
-device sync management
-
-
+```
 
 ---
 
-Security
+# Core Features
 
-AES-256-GCM encryption
+## Storage & Sync
 
-Argon2id key derivation
-
-local-first encryption
-
-signed upload sessions
-
-JWT authentication
-
-refresh token rotation
-
-device registration
-
-integrity verification
-
-
+- automatic folder sync
+- background uploads
+- resumable uploads
+- chunked uploads
+- offline queue persistence
+- cloud-only file architecture
+- restore-on-demand
+- selective sync
+- device sync management
 
 ---
 
-Storage Optimization
+## Security
 
-automatic cleanup recommendations
-
-cloud-backed storage
-
-smart local file removal
-
-storage usage estimation
-
-restore anytime
-
-
+- AES-256-GCM encryption
+- Argon2id key derivation
+- local-first encryption
+- signed upload sessions
+- JWT authentication
+- refresh token rotation
+- device registration
+- integrity verification
 
 ---
 
-Architecture Overview
+## Storage Optimization
 
-High-Level Architecture
+- automatic cleanup recommendations
+- cloud-backed storage
+- smart local file removal
+- storage usage estimation
+- restore anytime
 
+---
+
+# Architecture Overview
+
+## High-Level Architecture
+
+```text
 Frontend Apps
     ↓
 API Gateway
@@ -188,14 +163,15 @@ Chunk Upload Engine
 Signed Upload URLs
     ↓
 Backblaze B2
-
+```
 
 ---
 
-Sync Engine Architecture
+# Sync Engine Architecture
 
 QRD STORAGE dibangun di atas event-driven sync architecture.
 
+```text
 Filesystem Watcher
         ↓
 Sync Queue
@@ -211,14 +187,15 @@ Direct Upload
 Verification
         ↓
 Metadata Reconciliation
-
+```
 
 ---
 
-File Lifecycle
+# File Lifecycle
 
 QRD STORAGE menggunakan explicit sync state machine.
 
+```text
 DISCOVERED
 HASHING
 ENCRYPTING
@@ -229,59 +206,41 @@ SYNCED
 FAILED
 CONFLICTED
 RESTORING
+```
 
 Pendekatan ini membantu:
-
-resumable uploads
-
-crash recovery
-
-offline sync
-
-retry orchestration
-
-distributed reliability
-
-
+- resumable uploads
+- crash recovery
+- offline sync
+- retry orchestration
+- distributed reliability
 
 ---
 
-Storage Model
+# Storage Model
 
 QRD STORAGE menggunakan:
-
-usage-based pricing
-
-flexible storage billing
-
-no forced quota packages
-
+- usage-based pricing
+- flexible storage billing
+- no forced quota packages
 
 Philosophy:
 
 > Use what you need. Pay only for what you use.
 
-
-
 Pricing:
-
-Rp210 / GB / month
-
+- Rp210 / GB / month
 
 Download policy:
-
-free downloads up to 3× active storage usage
-
-speed throttling after limit
-
-downloads never blocked
-
-
+- free downloads up to 3× active storage usage
+- speed throttling after limit
+- downloads never blocked
 
 ---
 
-Repository Structure
+# Repository Structure
 
+```text
 apps/
   api/
   web/
@@ -293,408 +252,291 @@ packages/
   ui/
   sync-core/        (planned)
   local-db/         (planned)
-
+```
 
 ---
 
-Applications
+# Applications
 
-apps/api
+## apps/api
 
 NestJS backend:
-
-authentication
-
-device management
-
-upload session generation
-
-metadata persistence
-
-upload verification
-
-billing logic
-
+- authentication
+- device management
+- upload session generation
+- metadata persistence
+- upload verification
+- billing logic
 
 Stack:
-
-NestJS
-
-Fastify
-
-Prisma
-
-PostgreSQL
-
-BullMQ
-
-Redis
-
-
+- NestJS
+- Fastify
+- Prisma
+- PostgreSQL
+- BullMQ
+- Redis
 
 ---
 
-apps/web
+## apps/web
 
 Next.js dashboard:
-
-login/register
-
-storage dashboard
-
-sync monitoring
-
-billing estimation
-
-cloud file browsing
-
-restore management
-
+- login/register
+- storage dashboard
+- sync monitoring
+- billing estimation
+- cloud file browsing
+- restore management
 
 Stack:
-
-Next.js App Router
-
-React
-
-TailwindCSS
-
-shadcn/ui
-
-TypeScript strict mode
-
-
+- Next.js App Router
+- React
+- TailwindCSS
+- shadcn/ui
+- TypeScript strict mode
 
 ---
 
-Shared Packages
+# Shared Packages
 
-packages/crypto
+## packages/crypto
 
 Shared cryptographic utilities:
-
-Argon2id
-
-AES-256-GCM
-
-chunk encryption
-
-hierarchical key derivation
-
-secure random generation
-
+- Argon2id
+- AES-256-GCM
+- chunk encryption
+- hierarchical key derivation
+- secure random generation
 
 Important:
-
-encryption occurs locally
-
-plaintext never uploaded
-
-
+- encryption occurs locally
+- plaintext never uploaded
 
 ---
 
-packages/storage-sdk
+## packages/storage-sdk
 
 Backblaze B2 integration:
-
-authorization
-
-signed upload URLs
-
-direct upload payloads
-
-upload session helpers
-
+- authorization
+- signed upload URLs
+- direct upload payloads
+- upload session helpers
 
 Purpose:
-
-reduce backend bandwidth
-
-improve scalability
-
-reduce infrastructure costs
-
-
+- reduce backend bandwidth
+- improve scalability
+- reduce infrastructure costs
 
 ---
 
-packages/shared-types
+## packages/shared-types
 
 Shared TypeScript contracts:
-
-DTOs
-
-auth payloads
-
-upload sessions
-
-sync metadata
-
-device registration payloads
-
-
+- DTOs
+- auth payloads
+- upload sessions
+- sync metadata
+- device registration payloads
 
 ---
 
-packages/ui
+## packages/ui
 
 Reusable UI components:
-
-Button
-
-Input
-
-Card
-
-Icons
-
-shared layout primitives
-
-
+- Button
+- Input
+- Card
+- Icons
+- shared layout primitives
 
 ---
 
-Mobile Support
+# Mobile Support
 
 QRD STORAGE menggunakan Capacitor untuk mobile scaffolding.
 
 Supported:
-
-Android
-
-iOS
-
+- Android
+- iOS
 
 Current structure:
 
+```text
 apps/web/android
 apps/web/ios
+```
 
 Future direction:
-
-React Native sync engine
-
-native filesystem integrations
-
-background sync services
-
-
+- React Native sync engine
+- native filesystem integrations
+- background sync services
 
 ---
 
-Security Model
+# Security Model
 
 QRD STORAGE menggunakan zero-trust security architecture.
 
 Backend:
-
-cannot decrypt files
-
-cannot inspect content
-
-cannot access plaintext uploads
-
+- cannot decrypt files
+- cannot inspect content
+- cannot access plaintext uploads
 
 Object storage:
-
-stores encrypted chunks only
-
+- stores encrypted chunks only
 
 Encryption:
-
-happens locally
-
-before upload
-
-automatically in background
-
-
+- happens locally
+- before upload
+- automatically in background
 
 ---
 
-Threat Model
+# Threat Model
 
 QRD STORAGE mengasumsikan:
-
-storage providers may be compromised
-
-uploads may fail partially
-
-devices may disconnect unexpectedly
-
-network connectivity may be unreliable
-
+- storage providers may be compromised
+- uploads may fail partially
+- devices may disconnect unexpectedly
+- network connectivity may be unreliable
 
 Karena itu sistem dirancang untuk:
-
-resumable uploads
-
-retry orchestration
-
-integrity verification
-
-offline recovery
-
-crash-safe persistence
-
-
+- resumable uploads
+- retry orchestration
+- integrity verification
+- offline recovery
+- crash-safe persistence
 
 ---
 
-Scalability Principles
+# Scalability Principles
 
 QRD STORAGE dirancang untuk:
-
-millions of files
-
-millions of sync events
-
-distributed upload workers
-
-large file uploads
-
-horizontal backend scaling
-
+- millions of files
+- millions of sync events
+- distributed upload workers
+- large file uploads
+- horizontal backend scaling
 
 Scalability decisions:
-
-direct signed uploads
-
-stateless APIs
-
-chunk-based uploads
-
-async event-driven architecture
-
-persistent local queues
-
-
+- direct signed uploads
+- stateless APIs
+- chunk-based uploads
+- async event-driven architecture
+- persistent local queues
 
 ---
 
-Observability
+# Observability
 
 Storage systems sangat sulit di-debug.
 
 QRD STORAGE menggunakan:
-
-structured logging
-
-correlation IDs
-
-sync tracing
-
-upload diagnostics
-
+- structured logging
+- correlation IDs
+- sync tracing
+- upload diagnostics
 
 Important tracing IDs:
 
+```text
 syncId
 fileId
 chunkId
 deviceId
 uploadSessionId
-
+```
 
 ---
 
-Development Philosophy
+# Development Philosophy
 
 Every engineering decision should prioritize:
-
-privacy
-
-user ownership
-
-sync correctness
-
-low infrastructure cost
-
-scalability
-
-maintainability
-
-reliability
-
+- privacy
+- user ownership
+- sync correctness
+- low infrastructure cost
+- scalability
+- maintainability
+- reliability
 
 Never sacrifice:
-
-encryption
-
-user control
-
-transparency
-
+- encryption
+- user control
+- transparency
 
 for:
-
-analytics
-
-monetization
-
-convenience
-
-
+- analytics
+- monetization
+- convenience
 
 ---
 
-Getting Started
+# Getting Started
 
-Install dependencies
+## Install dependencies
 
+```bash
 pnpm install
-
+```
 
 ---
 
-Setup environment
+## Setup environment
 
+```bash
 cp .env.example .env
+```
 
 Configure:
 
+```env
 DATABASE_URL=
 JWT_SECRET=
 
 B2_ACCOUNT_ID=
 B2_APPLICATION_KEY=
 B2_BUCKET_ID=
-
+```
 
 ---
 
-Prisma setup
+## Prisma setup
 
+```bash
 cd apps/api
 
 pnpm prisma:generate
 pnpm prisma:migrate:dev --name init
-
+```
 
 ---
 
-Run development servers
+## Run development servers
 
 From root:
 
+```bash
 pnpm dev
+```
 
 Or run separately:
 
+```bash
 cd apps/api
 pnpm dev
 
 cd apps/web
 pnpm dev
-
+```
 
 ---
 
-Mobile Development
+# Mobile Development
 
-Android
+## Android
 
+```bash
 cd apps/web
 
 pnpm export
@@ -702,136 +544,99 @@ pnpm exec cap sync android
 
 cd android
 ./gradlew assembleDebug
+```
 
 Requirements:
-
-Android SDK
-
-JAVA_HOME
-
-platform-tools
-
-
+- Android SDK
+- JAVA_HOME
+- platform-tools
 
 ---
 
-iOS
+## iOS
 
 Requirements:
-
-macOS
-
-Xcode
-
-CocoaPods
-
+- macOS
+- Xcode
+- CocoaPods
 
 Workflow:
 
+```bash
 pnpm export
 pnpm exec cap sync ios
+```
 
 Then open:
 
+```text
 apps/web/ios/App.xcworkspace
-
+```
 
 ---
 
-Environment Variables
+# Environment Variables
 
+```env
 DATABASE_URL=
 JWT_SECRET=
 
 B2_ACCOUNT_ID=
 B2_APPLICATION_KEY=
 B2_BUCKET_ID=
-
-
----
-
-Current Development Status
-
-Implemented
-
-monorepo architecture
-
-NestJS backend
-
-Prisma schema
-
-JWT auth
-
-refresh token rotation
-
-device registration
-
-upload session generation
-
-Backblaze B2 integration
-
-shared crypto utilities
-
-Next.js dashboard scaffold
-
-Capacitor mobile scaffold
-
-
+```
 
 ---
 
-In Progress
+# Current Development Status
 
-sync-core package
+## Implemented
 
-resumable upload engine
-
-chunk manifest architecture
-
-persistent local queue
-
-upload verification
-
-realtime sync lifecycle
-
-
-
----
-
-Planned
-
-cloud-only files
-
-restore-on-demand
-
-selective sync
-
-sync conflict resolution
-
-chunk deduplication
-
-storage optimization engine
-
-distributed workers
-
-multi-provider storage support
-
-
+- monorepo architecture
+- NestJS backend
+- Prisma schema
+- JWT auth
+- refresh token rotation
+- device registration
+- upload session generation
+- Backblaze B2 integration
+- shared crypto utilities
+- Next.js dashboard scaffold
+- Capacitor mobile scaffold
 
 ---
 
-Long-Term Vision
+## In Progress
+
+- sync-core package
+- resumable upload engine
+- chunk manifest architecture
+- persistent local queue
+- upload verification
+- realtime sync lifecycle
+
+---
+
+## Planned
+
+- cloud-only files
+- restore-on-demand
+- selective sync
+- sync conflict resolution
+- chunk deduplication
+- storage optimization engine
+- distributed workers
+- multi-provider storage support
+
+---
+
+# Long-Term Vision
 
 QRD STORAGE aims to become:
-
-encrypted sync infrastructure
-
-intelligent cloud storage layer
-
-privacy-first storage ecosystem
-
-scalable encrypted storage network
-
+- encrypted sync infrastructure
+- intelligent cloud storage layer
+- privacy-first storage ecosystem
+- scalable encrypted storage network
 
 QRD STORAGE is not just cloud storage.
 
@@ -839,11 +644,8 @@ It is:
 
 > your personal encrypted storage layer.
 
-
-
-
 ---
 
-License
+# License
 
 Add appropriate LICENSE file before public distribution.
