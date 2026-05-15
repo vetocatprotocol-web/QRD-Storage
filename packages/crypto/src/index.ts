@@ -1,4 +1,4 @@
-import { randomBytes, createCipheriv, createDecipheriv } from 'crypto';
+import { randomBytes, createCipheriv, createDecipheriv, createHmac } from 'crypto';
 import argon2 from 'argon2';
 
 export interface EncryptedChunk {
@@ -7,7 +7,14 @@ export interface EncryptedChunk {
   authTag: string;
 }
 
-export async function deriveMasterKey(password: string, salt: Buffer, iterations = 3, memoryCost = 65536, parallelism = 1, hashLength = 32): Promise<Buffer> {
+export async function deriveMasterKey(
+  password: string,
+  salt: Buffer,
+  iterations = 3,
+  memoryCost = 65536,
+  parallelism = 1,
+  hashLength = 32,
+): Promise<Buffer> {
   return argon2.hash(password, {
     type: argon2.argon2id,
     timeCost: iterations,
@@ -17,6 +24,12 @@ export async function deriveMasterKey(password: string, salt: Buffer, iterations
     salt,
     raw: true,
   }) as Promise<Buffer>;
+}
+
+export function deriveKeyFromKey(key: Buffer, info: string, length = 32): Buffer {
+  const prk = createHmac('sha256', key).update(info).digest();
+  const okm = createHmac('sha256', prk).update(Buffer.from('qrds:' + info)).digest();
+  return okm.slice(0, length);
 }
 
 export function generateRandomKey(length = 32): Buffer {

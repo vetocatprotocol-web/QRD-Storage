@@ -1,13 +1,19 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { UploadService } from './upload.service.js';
 import type { CreateUploadSessionDto } from './upload.dto.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import type { FastifyRequest } from 'fastify';
 
 @Controller('uploads')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post('session')
-  async createUploadSession(@Body() body: CreateUploadSessionDto) {
-    return this.uploadService.createUploadSession(body);
+  @UseGuards(JwtAuthGuard)
+  async createUploadSession(
+    @Req() request: FastifyRequest & { user: { sub: string } },
+    @Body() body: CreateUploadSessionDto,
+  ) {
+    return this.uploadService.createUploadSession(request.user.sub, body);
   }
 }

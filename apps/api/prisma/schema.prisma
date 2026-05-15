@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String         @id @default(cuid())
+  email            String         @unique
+  passwordHash     String
+  firstName        String?
+  lastName         String?
+  refreshTokenHash String?
+  devices          Device[]
+  files            File[]
+  uploadSessions   UploadSession[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model Device {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  name       String
+  deviceKey  String
+  lastSeenAt DateTime?
+  files      File[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model File {
+  id                 String          @id @default(cuid())
+  user               User            @relation(fields: [userId], references: [id])
+  userId             String
+  device             Device?         @relation(fields: [deviceId], references: [id])
+  deviceId           String?
+  fileName           String
+  contentType        String
+  fileSize           Int
+  b2ObjectId         String?
+  status             String          @default("pending")
+  uploadSessions     UploadSession[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+}
+
+model UploadSession {
+  id                 String   @id @default(cuid())
+  user               User     @relation(fields: [userId], references: [id])
+  userId             String
+  file               File?    @relation(fields: [fileId], references: [id])
+  fileId             String?
+  uploadUrl          String
+  authorizationToken String
+  expiresAt          DateTime
+  createdAt          DateTime @default(now())
+}

@@ -7,6 +7,7 @@ export interface CreateUploadSessionDto {
 
 export interface UploadSessionResponse {
   uploadUrl: string;
+  authorizationToken: string;
   fileId: string;
   expiresAt: string;
 }

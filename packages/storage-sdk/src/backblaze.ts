@@ -25,7 +25,7 @@ export class BackblazeB2Client {
     this.bucketId = config.bucketId;
   }
 
-  async generateUploadUrl(fileName: string, contentType: string): Promise<string> {
+  async generateUploadUrl(fileName: string, contentType: string): Promise<UploadUrlPayload> {
     const auth = await this.authorizeAccount();
     const uploadUrlResponse = await this.fetchJson<UploadUrlPayload>(
       `${auth.apiUrl}/b2_get_upload_url`,
@@ -39,7 +39,7 @@ export class BackblazeB2Client {
       },
     );
 
-    return `${uploadUrlResponse.uploadUrl}?bucketId=${encodeURIComponent(this.bucketId)}&fileName=${encodeURIComponent(fileName)}&contentType=${encodeURIComponent(contentType)}`;
+    return uploadUrlResponse;
   }
 
   private async authorizeAccount(): Promise<AuthorizeAccountResponse> {
