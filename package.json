@@ -10,7 +10,10 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier --write .",
-    "start:api": "pnpm --filter @qrd/api dev"
+    "start:api": "pnpm --filter @qrd/api dev",
+    "mobile:sync": "pnpm --filter @qrd/web run cap:sync",
+    "mobile:android": "pnpm --filter @qrd/web run cap:build:android",
+    "mobile:ios": "pnpm --filter @qrd/web run cap:build:ios"
   },
   "workspaces": [
     "apps/*",

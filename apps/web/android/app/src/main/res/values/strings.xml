@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">QRD Storage</string>
+    <string name="title_activity_main">QRD Storage</string>
+    <string name="package_name">com.vetocatprotocol.qrdstorage</string>
+    <string name="custom_url_scheme">com.vetocatprotocol.qrdstorage</string>
+</resources>

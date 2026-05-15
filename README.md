@@ -96,6 +96,56 @@ From repo root:
 - `pnpm dev` — run all registered dev pipelines in parallel
 - `pnpm build` — build all workspaces
 - `pnpm format` — run Prettier across the repo
+- `pnpm -w run mobile:sync` — export web assets and sync Capacitor native platforms
+- `pnpm -w run mobile:android` — build Android debug APK after sync
+- `pnpm -w run mobile:ios` — export and sync iOS native assets (build IPA requires macOS)
+
+## Mobile app build
+
+This repository now includes Capacitor native scaffolding in `apps/web/android` and `apps/web/ios`.
+
+### Android
+
+1. From Codespaces, install Android SDK command line tools and platform packages (see your environment setup script).
+2. Run:
+
+```bash
+cd /workspaces/QRD-Storage/apps/web
+pnpm export
+pnpm exec cap sync android
+cd android
+./gradlew assembleDebug
+```
+
+3. The debug APK will appear at:
+
+```bash
+apps/web/android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+### iOS
+
+1. iOS archive and IPA builds require a macOS runner or Mac host.
+2. On `macos-latest` or a Mac, run:
+
+```bash
+cd /workspaces/QRD-Storage/apps/web
+pnpm export
+pnpm exec cap sync ios
+cd ios/App
+xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath build/App.xcarchive archive
+xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+```
+
+3. The IPA will be in:
+
+```bash
+apps/web/ios/App/build/ipa/
+```
+
+### GitHub Actions
+
+A workflow is available at `.github/workflows/build-apps.yml` for automated Android and iOS build artifacts.
 
 ## Environment variables
 

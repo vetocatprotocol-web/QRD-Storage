@@ -4,6 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { Button } from '@qrd/ui';
 import { Input } from '@qrd/ui';
 import { Card } from '@qrd/ui';
+import { login, register } from '../lib/api';
+import { saveTokens } from '../lib/session';
 
 interface AuthFormProps {
   type: 'login' | 'register';
@@ -18,35 +20,22 @@ export function AuthForm({ type }: AuthFormProps) {
 
   const label = type === 'login' ? 'Sign in to your account' : 'Create your account';
   const actionLabel = type === 'login' ? 'Sign in' : 'Create account';
-  const endpoint = type === 'login' ? 'auth/login' : 'auth/register';
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
     setMessage(null);
 
-    const payload = {
-      email,
-      password,
-      ...(type === 'register' ? { firstName: name, lastName: '' } : {}),
-    };
-
     try {
-      const response = await fetch(`/api/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const response =
+        type === 'login'
+          ? await login(email, password)
+          : await register(email, password, name);
 
-      const data = await response.json();
-      if (!response.ok) {
-        setMessage(data?.message || 'Unable to submit form');
-      } else {
-        setMessage('Success. Check console for tokens.');
-        console.log('auth response', data);
-      }
+      saveTokens(response.accessToken, response.refreshToken);
+      setMessage('Success. You are signed in.');
     } catch (error) {
-      setMessage('Network error, please try again.');
+      setMessage(error instanceof Error ? error.message : 'Unable to submit form');
     } finally {
       setIsLoading(false);
     }

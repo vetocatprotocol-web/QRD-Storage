@@ -8,3 +8,11 @@ coverage/
 .idea/
 .DS_Store
 pnpm-lock.yaml
+
+# Next.js and Capacitor build output
+.next/
+out/
+apps/web/out/
+apps/web/android/app/build/
+apps/web/ios/App/build/
+packages/ui/dist/

@@ -1,0 +1,98 @@
+name: Build Mobile Apps
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Set up Android SDK and tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip curl
+          export ANDROID_SDK_ROOT="$HOME/Android"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+          curl -L -o /tmp/cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-latest.zip"
+          unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+          mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
+      - name: Build web app and export static assets
+        run: |
+          cd apps/web
+          pnpm export
+      - name: Sync Capacitor Android project
+        run: |
+          cd apps/web
+          pnpm exec cap sync android
+      - name: Build Android APK and AAB
+        run: |
+          cd apps/web/android
+          ./gradlew assembleDebug
+          ./gradlew bundleRelease || true
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qrd-storage-android-artifacts
+          path: |
+            apps/web/android/app/build/outputs/apk/debug/app-debug.apk
+            apps/web/android/app/build/outputs/bundle/release/app-release.aab
+
+  ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build web app and export static assets
+        run: |
+          cd apps/web
+          pnpm export
+      - name: Sync Capacitor iOS project
+        run: |
+          cd apps/web
+          pnpm exec cap sync ios
+      - name: Create ExportOptions.plist
+        run: |
+          cat > apps/web/ios/App/ExportOptions.plist <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>compileBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+      - name: Build iOS archive and export IPA
+        run: |
+          cd apps/web/ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath build/App.xcarchive archive
+          xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+      - name: Upload iOS IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: qrd-storage-ios-ipa
+          path: apps/web/ios/App/build/ipa/**/*.ipa

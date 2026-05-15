@@ -6,15 +6,27 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "export": "next build",
+    "cap:sync": "pnpm exec cap sync",
+    "cap:add:android": "pnpm exec cap add android",
+    "cap:add:ios": "pnpm exec cap add ios",
+    "cap:sync:android": "pnpm exec cap sync android",
+    "cap:sync:ios": "pnpm exec cap sync ios",
+    "cap:build:android": "pnpm export && pnpm cap:sync:android && cd android && ./gradlew assembleDebug",
+    "cap:build:ios": "pnpm export && pnpm cap:sync:ios"
   },
   "dependencies": {
+    "@capacitor/core": "^6.0.0",
     "@qrd/ui": "workspace:*",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
     "@types/node": "^20.11.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.3",

@@ -1,17 +1,35 @@
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, CSSProperties } from 'react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
+  style?: CSSProperties;
 }
 
-export function Input({ label, className = '', ...props }: InputProps) {
+const labelStyle: CSSProperties = {
+  display: 'block',
+  marginBottom: '0.75rem',
+  color: '#334155',
+  fontSize: '0.95rem',
+  fontWeight: 500,
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  borderRadius: 18,
+  border: '1px solid #cbd5e1',
+  backgroundColor: '#ffffff',
+  padding: '0.85rem 1rem',
+  color: '#0f172a',
+  fontSize: '0.95rem',
+  outline: 'none',
+  boxShadow: '0 1px 2px rgba(15, 23, 42, 0.05)',
+};
+
+export function Input({ label, className = '', style, ...props }: InputProps) {
   return (
-    <label className={`block text-sm font-medium text-slate-700 ${className}`}>
-      <span className="mb-2 block text-slate-800">{label}</span>
-      <input
-        className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
-        {...props}
-      />
+    <label style={{ display: 'block', width: '100%', ...style }} className={className}>
+      <span style={labelStyle}>{label}</span>
+      <input style={inputStyle} {...props} />
     </label>
   );
 }
