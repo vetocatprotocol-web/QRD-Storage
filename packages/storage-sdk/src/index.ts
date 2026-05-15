@@ -1,2 +1,2 @@
 export * from './backblaze.js';
-export * from './multipart';
+export * from './multipart.js';
