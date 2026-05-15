@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "noEmit": false,
+    "module": "ESNext",
+    "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  "references": [
+    { "path": "../../packages/shared-types" },
+    { "path": "../../packages/storage-sdk" }
+  ],
+  "include": ["src/**/*"]
+}
