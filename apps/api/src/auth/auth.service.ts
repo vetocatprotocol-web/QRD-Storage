@@ -52,12 +52,22 @@ export class AuthService {
     return this.generateTokens(user.id, user.email);
   }
 
+  async logout(userId: string): Promise<void> {
+    // Remove stored refresh token hash to revoke refresh capability for the device/user.
+    await this.prisma.user.update({ where: { id: userId }, data: { refreshTokenHash: null } });
+  }
+
   private async generateTokens(userId: string, email: string): Promise<AuthTokens> {
-    const accessToken = jwt.sign({ sub: userId, email }, process.env.JWT_SECRET ?? 'default-secret', {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET environment variable is required');
+    }
+
+    const accessToken = jwt.sign({ sub: userId, email }, secret, {
       expiresIn: '15m',
     });
 
-    const refreshToken = jwt.sign({ sub: userId, email }, process.env.JWT_SECRET ?? 'default-secret', {
+    const refreshToken = jwt.sign({ sub: userId, email }, secret, {
       expiresIn: '7d',
     });
 
@@ -73,7 +83,12 @@ export class AuthService {
 
   verifyToken(token: string): JwtPayload {
     try {
-      return jwt.verify(token, process.env.JWT_SECRET ?? 'default-secret') as JwtPayload;
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        throw new Error('JWT_SECRET environment variable is required');
+      }
+
+      return jwt.verify(token, secret) as JwtPayload;
     } catch {
       throw new UnauthorizedException('Invalid token');
     }

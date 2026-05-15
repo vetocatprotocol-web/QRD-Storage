@@ -42,12 +42,27 @@ model File {
   deviceId           String?
   fileName           String
   contentType        String
-  fileSize           Int
+  fileSize           BigInt
   b2ObjectId         String?
   status             String          @default("pending")
+  // Encryption metadata required to restore the file
+  encryptionSalt     String?
+  encryptionIv       String?
+  encryptedChecksum  String?
+  plaintextChecksum  String?
+  chunkCount         Int?
+  verificationState  VerificationState @default(PENDING)
   uploadSessions     UploadSession[]
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
+}
+
+enum VerificationState {
+  PENDING
+  UPLOADING
+  VERIFYING
+  VERIFIED
+  FAILED
 }
 
 model UploadSession {
@@ -57,7 +72,24 @@ model UploadSession {
   file               File?    @relation(fields: [fileId], references: [id])
   fileId             String?
   uploadUrl          String
-  authorizationToken String
   expiresAt          DateTime
+  status             UploadSessionStatus @default(PENDING)
+  b2FileId           String?
+  encryptedChecksum  String?
+  plaintextChecksum  String?
+  encryptionSalt     String?
+  encryptionIv       String?
+  chunkCount         Int?
+  chunkManifest      Json?
+  verifiedAt         DateTime?
   createdAt          DateTime @default(now())
+}
+
+enum UploadSessionStatus {
+  PENDING
+  UPLOADING
+  VERIFYING
+  VERIFIED
+  FAILED
+  EXPIRED
 }

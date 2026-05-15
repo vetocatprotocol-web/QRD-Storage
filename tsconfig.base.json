@@ -18,7 +18,9 @@
     "paths": {
       "@qrd/crypto": ["packages/crypto/src"],
       "@qrd/shared-types": ["packages/shared-types/src"],
-      "@qrd/storage-sdk": ["packages/storage-sdk/src"]
+      "@qrd/storage-sdk": ["packages/storage-sdk/src"],
+      "@qrd/ui": ["packages/ui/src"],
+      "@qrd/sync-core": ["packages/sync-core/src"]
     }
   },
   "include": ["packages/**/*", "apps/**/*"]

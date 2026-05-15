@@ -10,6 +10,18 @@ export interface UploadSessionResponse {
   authorizationToken: string;
   fileId: string;
   expiresAt: string;
+  uploadSessionId?: string;
+}
+
+export interface VerifyUploadDto {
+  uploadSessionId: string;
+  b2FileId: string;
+  encryptedSha1: string;
+  plaintextChecksum?: string;
+  encryptionSalt?: string;
+  encryptionIv?: string;
+  chunkCount?: number;
+  chunkManifest?: string;
 }
 
 export interface SignedUploadUrl {

@@ -1,6 +1,7 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { UploadService } from './upload.service.js';
-import type { CreateUploadSessionDto } from './upload.dto.js';
+import { CreateUploadSessionDto } from './upload.dto.js';
+import { VerifyUploadDto } from './dto/verify-upload.dto.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import type { FastifyRequest } from 'fastify';
 
@@ -15,5 +16,14 @@ export class UploadController {
     @Body() body: CreateUploadSessionDto,
   ) {
     return this.uploadService.createUploadSession(request.user.sub, body);
+  }
+
+  @Post('verify')
+  @UseGuards(JwtAuthGuard)
+  async verifyUpload(
+    @Req() request: FastifyRequest & { user: { sub: string } },
+    @Body() body: VerifyUploadDto,
+  ) {
+    return this.uploadService.verifyUploadSession(request.user.sub, body);
   }
 }

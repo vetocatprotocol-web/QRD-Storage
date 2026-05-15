@@ -53,3 +53,12 @@ export async function createUploadSession(token: string, payload: CreateUploadSe
     body: JSON.stringify(payload),
   });
 }
+
+export async function getFiles(token: string) {
+  return request<any[]>('files', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}

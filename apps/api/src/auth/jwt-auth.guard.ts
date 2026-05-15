@@ -9,11 +9,18 @@ export class JwtAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<FastifyRequest & { user?: unknown }>();
     const authorization = request.headers['authorization'] as string | undefined;
-    if (!authorization?.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Authorization header missing');
+    let token: string | undefined;
+
+    if (authorization?.startsWith('Bearer ')) {
+      token = authorization.replace('Bearer ', '');
+    } else if ((request as any).cookies?.accessToken) {
+      // Support HttpOnly cookie-based access token as fallback
+      token = (request as any).cookies.accessToken as string | undefined;
     }
 
-    const token = authorization.replace('Bearer ', '');
+    if (!token) {
+      throw new UnauthorizedException('Authorization header or accessToken cookie missing');
+    }
     request.user = this.authService.verifyToken(token);
     return true;
   }
